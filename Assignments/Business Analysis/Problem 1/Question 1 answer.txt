@@ -1,1 +1,17 @@
-
+CREATE VIEW ltv_table AS 
+SELECT 
+        us.user_id, 
+        utm_source, 
+        us.created_at, 
+        last_login_at,
+        DATEDIFF(last_login_at, us.created_at) AS lifespan,
+        SUM(rd.total_revenue_in_paise) AS revenue
+    FROM user_sign_up us
+    JOIN user_offer_completion_data uof
+    ON us.user_id = uof.user_id
+    JOIN reward_details rd
+    ON uof.reward_id = rd.reward_id
+    GROUP BY user_id;
+SELECT 
+(SUM(revenue)/COUNT(DISTINCT user_id)) * AVG(lifespan) AS ltv from ltv_table;
+    
